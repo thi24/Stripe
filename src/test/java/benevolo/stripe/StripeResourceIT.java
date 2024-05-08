@@ -3,6 +3,6 @@ package benevolo.stripe;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
 @QuarkusIntegrationTest
-class ExampleResourceIT extends ExampleResourceTest {
+class StripeResourceIT extends StripeResourceTest {
     // Execute the same tests but in packaged mode.
 }
