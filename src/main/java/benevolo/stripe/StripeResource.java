@@ -18,7 +18,7 @@ import java.io.IOException;
 @Path("/payment")
 public class StripeResource {
     @POST
-    @Path("/create-payment-intent{bookingId}")
+    @Path("/create-payment-intent")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createPaymentIntent(String payload) {
         try {
