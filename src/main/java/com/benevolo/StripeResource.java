@@ -24,11 +24,8 @@ import java.io.IOException;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/payment")
 public class StripeResource {
-   final private String STRIPE_SECRET;
-    @Inject
-    public StripeResource(@ConfigProperty(name="STRIPE_SECRET") String stripeSecret) {
-        STRIPE_SECRET = stripeSecret;
-    }
+    @ConfigProperty(name = "STRIPE_API_KEY")
+    String STRIPE_SECRET;
 
     @POST
     @Path("/payment-intent")
