@@ -1,0 +1,94 @@
+name: Deploy events Service
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.OWNER_PASSWORD }}
+
+    - name: Build and push prod Docker image
+      if: github.ref == 'refs/heads/main'
+      run: |
+        docker compose build
+        docker compose push
+
+    - name: Build and push dev Docker image
+      if: github.ref == 'refs/heads/develop'
+      run: |
+        docker compose -f docker-compose-dev.yml build
+        docker compose -f docker-compose-dev.yml push
+
+  deploymain:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+          repository: 'thi24/gitops'
+          ref: 'main'
+          token:  ${{ secrets.GITOPS }}
+
+    - name: Setup git config
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "<>"
+
+    - name: Update docker image version
+      run: |
+        wget https://github.com/mikefarah/yq/releases/download/v4.42.1/yq_linux_amd64 -O yq &&\
+        chmod +x yq
+        NEW_VERSION=${GITHUB_RUN_ID}
+        yq e '.services["benevolo.payment-service"].image = "ghcr.io/thi24/benevolo.payment-service:'"$NEW_VERSION"'"' -i docker-compose.yml
+
+    - name: Commit and push changes
+      run: |
+        git commit -a -m "updated by GitHub Actions"
+        git push
+
+
+
+  deploydev:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/develop'
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+          repository: 'thi24/gitops-dev'
+          ref: 'main'
+          token:  ${{ secrets.GITOPS }}
+
+    - name: Setup git config
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "<>"
+
+    - name: Update docker image version
+      run: |
+        wget https://github.com/mikefarah/yq/releases/download/v4.42.1/yq_linux_amd64 -O yq &&\
+        chmod +x yq
+        NEW_VERSION=${GITHUB_RUN_ID}
+        yq e '.services["dev.benevolo.payment-service"].image = "ghcr.io/thi24/dev.benevolo.payment-service:'"$NEW_VERSION"'"' -i docker-compose.yml
+
+    - name: Commit and push changes
+      run: |
+        git commit -a -m "updated by GitHub Actions"
+        git push
