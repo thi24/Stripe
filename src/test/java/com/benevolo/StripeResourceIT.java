@@ -1,4 +1,4 @@
-package benevolo.stripe;
+package com.benevolo;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
