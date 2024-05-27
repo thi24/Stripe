@@ -65,9 +65,8 @@ public class StripeResource {
             Stripe.apiKey = STRIPE_SECRET;
             ObjectMapper mapper = new ObjectMapper();
             JsonNode requestData = mapper.readTree(payload);
-            String paymentIntentId = requestData.get("paymentIntent").asText();
-
-            RefundCreateParams params = RefundCreateParams.builder().setPaymentIntent(paymentIntentId).build();
+            long amount = requestData.get("amount").asLong();
+            RefundCreateParams params = RefundCreateParams.builder().setAmount(amount).build();
             Refund refund = Refund.create(params);
             return Response.ok().entity(refund.getId()).build();
         }catch(StripeException e){
