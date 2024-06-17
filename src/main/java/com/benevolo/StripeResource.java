@@ -24,8 +24,11 @@ import java.io.IOException;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/payment")
 public class StripeResource {
-    @ConfigProperty(name = "STRIPE_API_KEY")
-    String STRIPE_SECRET;
+   final private String STRIPE_SECRET;
+    @Inject
+    public StripeResource(@ConfigProperty(name="STRIPE_API_KEY") String stripeSecret) {
+        STRIPE_SECRET = stripeSecret;
+    }
 
     @POST
     @Path("/payment-intent")
@@ -61,10 +64,11 @@ public class StripeResource {
         try {
             Stripe.apiKey = STRIPE_SECRET;
             ObjectMapper mapper = new ObjectMapper();
+            System.out.println("hallo" + payload);
             JsonNode requestData = mapper.readTree(payload);
+            long amount = requestData.get("amount").asLong();
             String paymentIntentId = requestData.get("paymentIntent").asText();
-
-            RefundCreateParams params = RefundCreateParams.builder().setPaymentIntent(paymentIntentId).build();
+            RefundCreateParams params = RefundCreateParams.builder().setPaymentIntent(paymentIntentId).setAmount(amount).build();
             Refund refund = Refund.create(params);
             return Response.ok().entity(refund.getId()).build();
         }catch(StripeException e){
