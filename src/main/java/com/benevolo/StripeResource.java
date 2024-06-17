@@ -64,7 +64,6 @@ public class StripeResource {
         try {
             Stripe.apiKey = STRIPE_SECRET;
             ObjectMapper mapper = new ObjectMapper();
-            System.out.println("hallo" + payload);
             JsonNode requestData = mapper.readTree(payload);
             long amount = requestData.get("amount").asLong();
             String paymentIntentId = requestData.get("paymentIntent").asText();
