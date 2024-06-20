@@ -21,7 +21,6 @@ public class StripeLogic {
 
     public Response createPaymentIntent() {
         try {
-            System.out.println(STRIPE_SECRET);
             ObjectMapper mapper = new ObjectMapper();
             JsonNode requestData = mapper.readTree(payload);
             int amount = requestData.get("amount").asInt();
@@ -33,7 +32,7 @@ public class StripeLogic {
             PaymentIntent paymentIntent = PaymentIntent.create(params);
             String clientSecret = paymentIntent.getClientSecret();
             String id = paymentIntent.getId();
-            String jsonResponse = "{\"client_secret\": \"" + clientSecret + "\", \"id\": \"" + id + "\"}";
+            String jsonResponse = "{\"client_secret\": \"4" + clientSecret + "\", \"id\": \"" + id + "\"}";
             return Response.ok().entity(jsonResponse).build();
         } catch (JsonProcessingException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Fehler beim Erstellen des PaymentIntent: " + e.getMessage()).build();
