@@ -33,7 +33,7 @@ public class StripeResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createPaymentIntent(String payload) {
             StripeLogic logic = new StripeLogic(payload);
-            return logic.createPaymentIntent();
+            return Response.ok(logic.createPaymentIntent()).build();
 
 
     }
