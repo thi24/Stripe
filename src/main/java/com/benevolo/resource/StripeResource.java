@@ -39,17 +39,7 @@ public class StripeResource {
     @Path("/refund")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createRefund(String payload) throws JsonProcessingException, StripeException {
-        try {
-            Stripe.apiKey = STRIPE_SECRET;
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode requestData = mapper.readTree(payload);
-            long amount = requestData.get("amount").asLong();
-            String paymentIntentId = requestData.get("paymentIntent").asText();
-            RefundCreateParams params = RefundCreateParams.builder().setPaymentIntent(paymentIntentId).setAmount(amount).build();
-            Refund refund = Refund.create(params);
-            return Response.noContent().build();
-        }catch(StripeException e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Fehler beim erstellen der Rueckerstattung").build();
-        }
+            StripeLogic logic = new StripeLogic(payload,STRIPE_SECRET);
+            return logic.createRefund();
     }
 }
