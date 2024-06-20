@@ -9,15 +9,17 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 
 public class StripeLogic {
-    @ConfigProperty(name = "STRIPE_API_KEY")
-    String STRIPE_SECRET;
+
     private String payload = "";
-    public StripeLogic(String payload) {
+    private final String STRIPE_SECRET;
+    public StripeLogic(String payload, String stripeSecret) {
+        this.STRIPE_SECRET = stripeSecret;
         this.payload = payload;
     }
+
 
     public Response createPaymentIntent() {
         try {

@@ -32,10 +32,8 @@ public class StripeResource {
     @Path("/payment-intent")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createPaymentIntent(String payload) {
-            StripeLogic logic = new StripeLogic(payload);
+            StripeLogic logic = new StripeLogic(payload,STRIPE_SECRET);
             return logic.createPaymentIntent();
-
-
     }
     @POST
     @Path("/refund")
