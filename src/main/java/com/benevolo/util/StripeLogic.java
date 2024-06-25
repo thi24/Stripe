@@ -15,9 +15,8 @@ import jakarta.ws.rs.core.Response;
 
 public class StripeLogic {
     private String payload = "";
-    private static String STRIPE_SECRET;
     public StripeLogic(String payload, String stripeSecret) {
-        STRIPE_SECRET = stripeSecret;
+        Stripe.apiKey = stripeSecret;
         this.payload = payload;
     }
     public Response createPaymentIntent() {
@@ -30,7 +29,6 @@ public class StripeLogic {
             int amount = requestData.get("amount").asInt();
             String currency = requestData.get("currency").asText();
             String productDescription = requestData.get("product").asText();
-            Stripe.apiKey = STRIPE_SECRET;
 
             PaymentIntentCreateParams params = PaymentIntentCreateParams.builder().setAmount((long) amount).setCurrency(currency).setDescription(productDescription).build();
             PaymentIntent paymentIntent = PaymentIntent.create(params);
@@ -50,7 +48,6 @@ public class StripeLogic {
         long amount = requestData.get("amount").asLong();
         String paymentIntentId = requestData.get("paymentIntent").asText();
         try {
-            Stripe.apiKey = STRIPE_SECRET;
             RefundCreateParams params = RefundCreateParams.builder().setPaymentIntent(paymentIntentId).setAmount(amount).build();
             Refund refund = Refund.create(params);
             return Response.noContent().build();
