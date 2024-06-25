@@ -17,24 +17,24 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/payment")
 public class StripeResource {
-   final private String STRIPE_SECRET;
+   private static String stripeApiKey;
     @Inject
     public StripeResource(@ConfigProperty(name="STRIPE_API_KEY") String stripeSecret) {
-        STRIPE_SECRET = stripeSecret;
+        stripeApiKey = stripeSecret;
     }
 
     @POST
     @Path("/payment-intent")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createPaymentIntent(String payload) {
-            StripeLogic logic = new StripeLogic(payload,STRIPE_SECRET);
+            StripeLogic logic = new StripeLogic(payload, stripeApiKey);
             return logic.createPaymentIntent();
     }
     @POST
     @Path("/refund")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createRefund(String payload) throws JsonProcessingException, StripeException {
-            StripeLogic logic = new StripeLogic(payload,STRIPE_SECRET);
+            StripeLogic logic = new StripeLogic(payload, stripeApiKey);
             return logic.createRefund();
     }
 }
