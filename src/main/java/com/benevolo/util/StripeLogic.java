@@ -49,7 +49,7 @@ public class StripeLogic {
         String paymentIntentId = requestData.get("paymentIntent").asText();
         try {
             RefundCreateParams params = RefundCreateParams.builder().setPaymentIntent(paymentIntentId).setAmount(amount).build();
-            Refund refund = Refund.create(params);
+            Refund.create(params);
             return Response.noContent().build();
         } catch (StripeException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Fehler beim erstellen der Rueckerstattung").build();

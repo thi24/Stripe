@@ -33,7 +33,7 @@ public class StripeResource {
     @POST
     @Path("/refund")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createRefund(String payload) throws JsonProcessingException, StripeException {
+    public Response createRefund(String payload) throws JsonProcessingException {
             StripeLogic logic = new StripeLogic(payload, stripeApiKey);
             return logic.createRefund();
     }
