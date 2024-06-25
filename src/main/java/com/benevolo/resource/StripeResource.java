@@ -2,7 +2,6 @@ package com.benevolo.resource;
 
 import com.benevolo.util.StripeLogic;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.stripe.exception.StripeException;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
