@@ -1,7 +1,6 @@
 package com.benevolo.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.Stripe;
@@ -10,18 +9,21 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.model.Refund;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.RefundCreateParams;
+
 import jakarta.ws.rs.core.Response;
 
 
 public class StripeLogic {
-
     private String payload = "";
-    private final String STRIPE_SECRET;
+    private static String STRIPE_SECRET;
     public StripeLogic(String payload, String stripeSecret) {
-        this.STRIPE_SECRET = stripeSecret;
+        STRIPE_SECRET = stripeSecret;
         this.payload = payload;
     }
     public Response createPaymentIntent() {
+        if(this.payload == null || this.payload.isEmpty()) {
+            return Response.noContent().build();
+        }
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode requestData = mapper.readTree(payload);
@@ -57,4 +59,3 @@ public class StripeLogic {
         }
     }
 }
-
