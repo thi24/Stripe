@@ -38,7 +38,7 @@ public class StripeResourceTest {
     public void testCreatePaymentIntent() throws JsonProcessingException {
         // Arrange
 
-        String payload = "{\"amount\": 100, \"currency\": \"usd\", \"product\": \"test product\"}";
+        String payload = "{\"amount\": 100, \"currency\": \"eur\", \"product\": \"test product\"}";
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder().setAmount(100L).setCurrency("usd").setDescription("test product").build();
         PaymentIntent paymentIntent = new PaymentIntent();
         paymentIntent.setClientSecret("client_secret");
@@ -56,5 +56,20 @@ public class StripeResourceTest {
                 .then()
                 .statusCode(200)
                 .body("client_secret", startsWith("pi_"));
+    }
+    @Test
+    public void testCreateRefund() throws JsonProcessingException {
+        // Arrange
+        String payload = "{\"amount\": 1, \"paymentIntent\": \"pi_3PVClhCzSI00rA1V1r3H6eqd\"}";
+        when(stripeLogic.createRefund(any(String.class))).thenReturn(null);
+        // Act and Assert
+        RestAssured
+                .given()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(payload)
+                .when()
+                .post("/payment/refund")
+                .then()
+                .statusCode(204);
     }
 }
