@@ -10,7 +10,6 @@ import io.restassured.RestAssured;
 import jakarta.ws.rs.core.MediaType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import java.lang.reflect.Field;
@@ -56,6 +55,7 @@ public class StripeResourceTest {
                 .then()
                 .statusCode(200)
                 .body("client_secret", startsWith("pi_"));
+
     }
     @Test
     public void testCreateRefund() throws JsonProcessingException {
