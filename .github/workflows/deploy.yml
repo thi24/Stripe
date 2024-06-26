@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+      DOCKER_IMAGE_NAME: ghcr.io/thi24/benevolo.payment-service
+      DOCKER_IMAGE_TAG: ${{ github.sha }}
 
     steps:
     - name: Checkout
@@ -21,17 +23,28 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.OWNER_PASSWORD }}
 
-    - name: Build and push prod Docker image
+    - name: Set env variables for prod
       if: github.ref == 'refs/heads/main'
       run: |
-        docker compose build
-        docker compose push
+        echo "DOCKER_IMAGE_NAME=ghcr.io/thi24/benevolo.payment-service" >> $GITHUB_ENV
 
-    - name: Build and push dev Docker image
+    - name: Set env variables for dev
       if: github.ref == 'refs/heads/develop'
       run: |
-        docker compose -f docker-compose-dev.yml build
-        docker compose -f docker-compose-dev.yml push
+        echo "DOCKER_IMAGE_NAME=ghcr.io/thi24/dev.benevolo.payment-service" >> $GITHUB_ENV
+
+    - name: Build jar
+      run: mvn package
+
+    - name: Build and push Docker image
+      run: |
+        docker build \
+        -f src/main/docker/Dockerfile.jvm \
+        --build-arg STRIPE_API_KEY=STRIPE_API_KEY \
+        -t $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG .
+        
+        docker push $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
+
 
   deploymain:
     runs-on: ubuntu-latest
@@ -54,7 +67,7 @@ jobs:
       run: |
         wget https://github.com/mikefarah/yq/releases/download/v4.42.1/yq_linux_amd64 -O yq &&\
         chmod +x yq
-        NEW_VERSION=${GITHUB_RUN_ID}
+        NEW_VERSION=${{ github.sha }}
         yq e '.services["benevolo.payment-service"].image = "ghcr.io/thi24/benevolo.payment-service:'"$NEW_VERSION"'"' -i docker-compose.yml
 
     - name: Commit and push changes
@@ -85,7 +98,7 @@ jobs:
       run: |
         wget https://github.com/mikefarah/yq/releases/download/v4.42.1/yq_linux_amd64 -O yq &&\
         chmod +x yq
-        NEW_VERSION=${GITHUB_RUN_ID}
+        NEW_VERSION=${{ github.sha }}
         yq e '.services["dev.benevolo.payment-service"].image = "ghcr.io/thi24/dev.benevolo.payment-service:'"$NEW_VERSION"'"' -i docker-compose.yml
 
     - name: Commit and push changes
