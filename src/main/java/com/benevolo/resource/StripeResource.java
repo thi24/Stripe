@@ -42,6 +42,9 @@ public class StripeResource {
     @Path("/refund")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createRefund(String payload) throws JsonProcessingException {
+        if(payload == null || payload.isEmpty()){
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         StripeLogic logic = new StripeLogic();
         StripeClient client = new StripeClient();
         client.createRefund(logic.createRefund(payload), stripeApiKey);

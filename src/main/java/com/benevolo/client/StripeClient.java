@@ -8,7 +8,7 @@ import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.RefundCreateParams;
 
 public class StripeClient {
-    public PaymentIntent createPaymentIntent(PaymentIntentCreateParams param, String apiKey){
+    public PaymentIntent createPaymentIntent(PaymentIntentCreateParams param, String apiKey) {
         try {
             Stripe.apiKey = apiKey;
             return PaymentIntent.create(param);
@@ -16,7 +16,8 @@ public class StripeClient {
             throw new RuntimeException(e);
         }
     }
-    public void createRefund(RefundCreateParams param, String apiKey){
+
+    public void createRefund(RefundCreateParams param, String apiKey) {
         try {
             Stripe.apiKey = apiKey;
             Refund.create(param);

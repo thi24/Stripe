@@ -10,15 +10,17 @@ import io.restassured.RestAssured;
 import jakarta.ws.rs.core.MediaType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import java.lang.reflect.Field;
+
 import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+
 @QuarkusTest
-public class StripeResourceTest {
+class StripeResourceTest {
 
     @Mock
     private StripeClient stripeClient;
@@ -27,7 +29,7 @@ public class StripeResourceTest {
     private StripeLogic stripeLogic;
 
     @BeforeEach
-    public void setup() throws NoSuchFieldException, IllegalAccessException{
+    void setup() throws NoSuchFieldException, IllegalAccessException {
         MockitoAnnotations.openMocks(this);
         Field stripeApiKeyField = StripeResource.class.getDeclaredField("stripeApiKey");
         stripeApiKeyField.setAccessible(true);
@@ -35,10 +37,10 @@ public class StripeResourceTest {
     }
 
     @Test
-    public void testCreatePaymentIntent() throws JsonProcessingException {
+    void testCreatePaymentIntent() throws JsonProcessingException {
         // Arrange
 
-        String payload = "{\"amount\": 100, \"currency\": \"usd\", \"product\": \"test product\"}";
+        String payload = "{\"amount\": 100, \"currency\": \"eur\", \"product\": \"test product\"}";
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder().setAmount(100L).setCurrency("usd").setDescription("test product").build();
         PaymentIntent paymentIntent = new PaymentIntent();
         paymentIntent.setClientSecret("client_secret");
@@ -56,5 +58,22 @@ public class StripeResourceTest {
                 .then()
                 .statusCode(200)
                 .body("client_secret", startsWith("pi_"));
+
+    }
+
+    @Test
+    void testCreateRefund() throws JsonProcessingException {
+        // Arrange
+        String payload = "{\"amount\": 1, \"paymentIntent\": \"pi_3PVClhCzSI00rA1V1r3H6eqd\"}";
+        when(stripeLogic.createRefund(any(String.class))).thenReturn(null);
+        // Act and Assert
+        RestAssured
+                .given()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(payload)
+                .when()
+                .post("/payment/refund")
+                .then()
+                .statusCode(204);
     }
 }
