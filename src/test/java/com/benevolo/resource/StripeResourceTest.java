@@ -3,7 +3,6 @@ package com.benevolo.resource;
 import com.benevolo.client.StripeClient;
 import com.benevolo.util.StripeLogic;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import io.quarkus.test.junit.QuarkusTest;
@@ -14,9 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import static org.hamcrest.Matchers.equalTo;
 import java.lang.reflect.Field;
-
 import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -28,9 +25,6 @@ public class StripeResourceTest {
 
     @Mock
     private StripeLogic stripeLogic;
-
-    @InjectMocks
-    private StripeResource stripeResource;
 
     @BeforeEach
     public void setup() throws NoSuchFieldException, IllegalAccessException{
