@@ -64,13 +64,9 @@ jobs:
       run: |
         docker build \
         -f src/main/docker/Dockerfile.jvm \
-        
-        --build-arg STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }} \
-
+        --build-arg STRIPE_API_KEY=$STRIPE_API_KEY \
         -t $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG .
-        
         docker push $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
-
 
   deploymain:
     runs-on: ubuntu-latest
@@ -100,8 +96,6 @@ jobs:
       run: |
         git commit -a -m "updated by GitHub Actions"
         git push
-
-
 
   deploydev:
     runs-on: ubuntu-latest
