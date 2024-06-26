@@ -27,7 +27,7 @@ public class StripeLogic {
     }
 
     public RefundCreateParams createRefund(String payload) throws JsonProcessingException {
-        if(payload == null || payload.isEmpty()){
+        if (payload == null || payload.isEmpty()) {
             return null;
         }
         ObjectMapper mapper = new ObjectMapper();
