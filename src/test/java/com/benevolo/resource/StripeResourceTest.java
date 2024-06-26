@@ -7,16 +7,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.ws.rs.core.Response;
+import io.restassured.RestAssured;
+import jakarta.ws.rs.core.MediaType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
+import static org.hamcrest.Matchers.equalTo;
 import java.lang.reflect.Field;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 @QuarkusTest
@@ -42,6 +43,7 @@ public class StripeResourceTest {
     @Test
     public void testCreatePaymentIntent() throws JsonProcessingException {
         // Arrange
+
         String payload = "{\"amount\": 100, \"currency\": \"usd\", \"product\": \"test product\"}";
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder().setAmount(100L).setCurrency("usd").setDescription("test product").build();
         PaymentIntent paymentIntent = new PaymentIntent();
@@ -50,12 +52,15 @@ public class StripeResourceTest {
 
         when(stripeLogic.createPaymentIntent(any(String.class))).thenReturn(params);
         when(stripeClient.createPaymentIntent(any(PaymentIntentCreateParams.class), any(String.class))).thenReturn(paymentIntent);
-        Response response = stripeResource.createPaymentIntent(payload);
-        // Deserialize the JSON response into a PaymentIntent object
-        ObjectMapper mapper = new ObjectMapper();
-        // Assert
-        assertEquals(200, response.getStatus());
-        assertEquals("client_secret", paymentIntent.getClientSecret());
-        assertEquals("id", paymentIntent.getId());
+        // Act and Assert
+        RestAssured
+                .given()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(payload)
+                .when()
+                .post("/payment/payment-intent")
+                .then()
+                .statusCode(200)
+                .body("client_secret", startsWith("pi_"));
     }
 }
