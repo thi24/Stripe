@@ -7,8 +7,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
 class StripeLogicTest {
@@ -35,7 +34,7 @@ class StripeLogicTest {
         String payload = "";
         PaymentIntentCreateParams params = stripeLogic.createPaymentIntent(payload);
 
-        assertEquals(null, params);
+        assertNull(params);
     }
 
     @Test
