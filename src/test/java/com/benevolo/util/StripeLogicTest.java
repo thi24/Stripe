@@ -34,7 +34,7 @@ class StripeLogicTest {
         String payload = "";
         PaymentIntentCreateParams params = stripeLogic.createPaymentIntent(payload);
 
-        assertNull(params);
+        assertEquals(null, params);
     }
 
     @Test
@@ -42,7 +42,7 @@ class StripeLogicTest {
         String payload = null;
         PaymentIntentCreateParams params = stripeLogic.createPaymentIntent(payload);
 
-        assertEquals(null, params);
+        assertNull(params);
     }
 
     @Test
@@ -67,7 +67,7 @@ class StripeLogicTest {
         String payload = "";
         RefundCreateParams params = stripeLogic.createRefund(payload);
 
-        assertTrue(params == null);
+        assertNull(params);
     }
 
     @Test
