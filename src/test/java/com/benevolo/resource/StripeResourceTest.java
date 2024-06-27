@@ -76,4 +76,18 @@ class StripeResourceTest {
                 .then()
                 .statusCode(204);
     }
+    @Test
+    void testCreateRefundWithEmptyPayload() throws JsonProcessingException {
+        // Arrange
+        String payload = "";
+        // Act and Assert
+        RestAssured
+                .given()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(payload)
+                .when()
+                .post("/payment/refund")
+                .then()
+                .statusCode(400);
+    }
 }
